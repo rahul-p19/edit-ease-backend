@@ -21,6 +21,7 @@ public class JwtService {
     private final SecretKey key;
 
     public JwtService(@Value("${jwt.secret.key}") String secretKey){
+        System.out.println("jwt secret key: " + secretKey);
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
