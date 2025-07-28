@@ -1,0 +1,29 @@
+name: edit-ease-backend-ci
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: build-jar
+        run: ./mvnw clean install -DskipTests
+
+      - name: Login to Dockerhub
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+      - name: Build Docker Image
+        run: docker build --platform linux/amd64 -t edit-ease-backend .
+
+      - name: Push to Dockerhub
+        run: docker push rahulp19/edit-ease-backend:latest
