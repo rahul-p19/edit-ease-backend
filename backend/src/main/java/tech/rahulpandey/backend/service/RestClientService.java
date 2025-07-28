@@ -17,7 +17,7 @@ public class RestClientService {
     private final JsonService jsonService;
 
     public RestClientService(RestClient.Builder restClientBuilder,  JsonService jsonService, @Value("${github.username}") String owner,@Value("${github.repo}") String repo,@Value("${github.access.token}") String accessToken) {
-        String url = String.format("https://api.github.com/repos/%s/%s/contents/frontend/src/assets/eventData/", owner, repo);
+        String url = String.format("https://api.github.com/repos/%s/%s/contents/src/assets/eventData/", owner, repo);
         restClient = restClientBuilder.baseUrl(url).build();
         this.jsonService = jsonService;
         this.accessToken = accessToken;
