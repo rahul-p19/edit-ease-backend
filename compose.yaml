@@ -1,0 +1,8 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    image: edit-ease-backend-prod
+    env_file: .env
+    ports:
+      - 8080:8080
