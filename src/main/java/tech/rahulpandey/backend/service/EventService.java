@@ -18,7 +18,6 @@ public class EventService {
     }
 
     public Event updateEvent(Event event) {
-        System.out.println(event.toString());
         return eventRepository.save(event);
     }
 

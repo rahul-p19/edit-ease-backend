@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import tech.rahulpandey.backend.model.AllEventsDTO;
 import tech.rahulpandey.backend.model.Event;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Service
 public class JsonService {
@@ -24,22 +24,32 @@ public class JsonService {
             JsonNode jsonNode = objectMapper.readTree(res);
             return jsonNode.get("sha").asText();
         }catch(JsonProcessingException e){
-            System.out.println("Error while extracting sha: "+e.getMessage());
+            System.err.println("Error while extracting sha: "+e.getMessage());
         }
         return null;
     }
 
     public String buildRequestBody(String sha, Event event) throws JsonProcessingException {
         String eventJson = objectMapper.writeValueAsString(event);
-        System.out.println(eventJson);
         String content = Base64.getEncoder().encodeToString(eventJson.getBytes());
+        return formatRequest(sha,content,"update "+event.getSlug()+" data ");
+    }
 
+    private String formatRequest(String sha, String content, String message) throws JsonProcessingException{
         Map<String,String> data = new HashMap<>();
         if(sha != null) data.put("sha",sha);
         data.put("content",content);
-        data.put("message","chore: update "+event.getName()+" content");
+        data.put("message","chore: "+message);
 
         return objectMapper.writeValueAsString(data);
+    }
+
+    public String formatAllEventsBody(List<Event> events, String sha) throws JsonProcessingException {
+        List<AllEventsDTO> allEvents = new ArrayList<>();
+        events.forEach(event -> allEvents.add(new AllEventsDTO(event)));
+        String jsonString = objectMapper.writeValueAsString(allEvents);
+        String encodedContent = Base64.getEncoder().encodeToString(jsonString.getBytes());
+        return formatRequest(sha, encodedContent, " update allEvents via cron");
     }
 
 }
