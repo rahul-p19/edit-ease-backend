@@ -26,13 +26,13 @@ public class EventScheduler {
         this.restClientService = restClientService;
     }
 
-    @Scheduled(cron = "0 15 1 * * *")
+    @Scheduled(cron = "0 30 1 * * *")
     public boolean updateAllEventsData() {
         try {
             List<Event> allEvents = (List<Event>) eventService.getAllEvents();
             String sha = restClientService.getFileSha("allEvents");
             String requestBody = jsonService.formatAllEventsBody(allEvents,sha);
-            restClientService.updateFileContent(sha, requestBody);
+            restClientService.updateFileContent("allEvents", requestBody);
             return true;
         } catch (Exception e) {
             System.err.println("Error occurred while updating allEvents: " + e.getMessage());
