@@ -26,7 +26,7 @@ public class EventScheduler {
         this.restClientService = restClientService;
     }
 
-    @Scheduled(cron = "0 5 1 * * *")
+    @Scheduled(cron = "0 15 1 * * *")
     public boolean updateAllEventsData() {
         try {
             List<Event> allEvents = (List<Event>) eventService.getAllEvents();

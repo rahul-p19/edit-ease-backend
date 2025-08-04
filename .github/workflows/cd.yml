@@ -14,5 +14,11 @@ jobs:
       - name: Stop running docker container
         run: sudo docker compose down
 
+      - name: Clean up old images
+        run: sudo docker image prune -f
+
+      - name: Pull docker image from dockerhub
+        run: sudo docker pull rahulp19/edit-ease-backend:latest
+
       - name: Run Docker Compose
         run: sudo docker compose up -d --build
