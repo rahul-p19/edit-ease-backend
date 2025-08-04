@@ -1,5 +1,6 @@
 package tech.rahulpandey.backend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.rahulpandey.backend.model.Event;
@@ -11,6 +12,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/events")
+@Tag(name = "Event APIs", description = "View and Edit Event Data")
 public class EventDataController {
 
     private final RestClientService restClientService;

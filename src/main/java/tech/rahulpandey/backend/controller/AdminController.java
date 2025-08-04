@@ -1,5 +1,6 @@
 package tech.rahulpandey.backend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import tech.rahulpandey.backend.service.EventService;
 
 @RestController
 @RequestMapping("/api/admin")
+@Tag(name = "Admin APIs")
 public class AdminController {
 
     private final EventService eventService;

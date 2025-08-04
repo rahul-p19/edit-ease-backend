@@ -23,14 +23,18 @@ import tech.rahulpandey.backend.service.MyUserDetailsService;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
     MyUserDetailsService myUserDetailsService;
 
-    @Autowired
-    private JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
+
+    private final CustomCorsConfig customCorsConfig;
 
     @Autowired
-    private CustomCorsConfig customCorsConfig;
+    public SecurityConfig(MyUserDetailsService myUserDetailsService, JwtFilter jwtFilter, CustomCorsConfig customCorsConfig) {
+        this.myUserDetailsService = myUserDetailsService;
+        this.jwtFilter = jwtFilter;
+        this.customCorsConfig = customCorsConfig;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +42,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c.configurationSource(customCorsConfig))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**","/api/health","/docs/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
