@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import tech.rahulpandey.backend.model.AllEventsDTO;
 import tech.rahulpandey.backend.model.Event;
+import tech.rahulpandey.backend.model.FileContentDTO;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -29,6 +30,18 @@ public class JsonService {
         return null;
     }
 
+    public FileContentDTO extractContentFromResponse(String res) {
+        try{
+            JsonNode jsonNode = objectMapper.readTree(res);
+            String sha = jsonNode.get("sha").asText();
+            String content = jsonNode.get("content").asText();
+            return new FileContentDTO(sha,content);
+        }catch(JsonProcessingException e){
+            System.err.println("Error while extracting sha: "+e.getMessage());
+        }
+        return null;
+    }
+
     public String buildRequestBody(String sha, Event event) throws JsonProcessingException {
         String eventJson = objectMapper.writeValueAsString(event);
         String content = Base64.getEncoder().encodeToString(eventJson.getBytes());
@@ -44,10 +57,13 @@ public class JsonService {
         return objectMapper.writeValueAsString(data);
     }
 
-    public String formatAllEventsBody(List<Event> events, String sha) throws JsonProcessingException {
+    public String allEventsToString(List<Event> events) throws JsonProcessingException {
         List<AllEventsDTO> allEvents = new ArrayList<>();
         events.forEach(event -> allEvents.add(new AllEventsDTO(event)));
-        String jsonString = objectMapper.writeValueAsString(allEvents);
+        return objectMapper.writeValueAsString(allEvents);
+    }
+
+    public String formatAllEventsBody(String jsonString, String sha) throws JsonProcessingException {
         String encodedContent = Base64.getEncoder().encodeToString(jsonString.getBytes());
         return formatRequest(sha, encodedContent, " update allEvents via cron");
     }

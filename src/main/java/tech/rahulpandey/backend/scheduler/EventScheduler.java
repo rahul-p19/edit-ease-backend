@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tech.rahulpandey.backend.model.Event;
+import tech.rahulpandey.backend.model.FileContentDTO;
 import tech.rahulpandey.backend.service.EventService;
 import tech.rahulpandey.backend.service.JsonService;
 import tech.rahulpandey.backend.service.RestClientService;
@@ -29,9 +30,19 @@ public class EventScheduler {
     @Scheduled(cron = "0 40 1 * * *", zone = "Asia/Kolkata")
     public boolean updateAllEventsData() {
         try {
+            // get all events from db
             List<Event> allEvents = (List<Event>) eventService.getAllEvents();
-            String sha = restClientService.getFileSha("allEvents");
-            String requestBody = jsonService.formatAllEventsBody(allEvents,sha);
+
+            // get file content from GitHub api
+            FileContentDTO fileContent = restClientService.getFileContent("allEvents");
+            String sha = fileContent.getSha();
+            String githubFile = fileContent.getContent();
+            String databaseFile  = jsonService.allEventsToString(allEvents);
+
+            // exit if there is no change
+            if(githubFile.equals(databaseFile)) return false;
+
+            String requestBody = jsonService.formatAllEventsBody(databaseFile,sha);
             restClientService.updateFileContent("allEvents", requestBody);
             return true;
         } catch (Exception e) {

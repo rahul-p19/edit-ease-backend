@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import tech.rahulpandey.backend.model.FileContentDTO;
 
 import java.io.IOException;
 
@@ -24,7 +25,7 @@ public class RestClientService {
     }
 
     // method to get SHA for required file
-    public String getFileSha(String path) {
+    public FileContentDTO getFileContent(String path) {
         try{
             String res =  restClient.get()
                     .uri(path+".json")
@@ -33,7 +34,7 @@ public class RestClientService {
                     .header("X-GitHub-Api-Version", "2022-11-28")
                     .retrieve()
                     .body(String.class);
-            return jsonService.extractShaFromResponse(res);
+            return jsonService.extractContentFromResponse(res);
         }catch (Exception e){
             System.out.println("Error while fetching file contents: "+e.getMessage());
             return null;
