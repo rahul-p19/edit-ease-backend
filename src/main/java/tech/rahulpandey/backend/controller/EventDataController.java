@@ -27,7 +27,7 @@ public class EventDataController {
 
     @PutMapping("/{path}")
     public ResponseEntity<Event> updateEventData(@PathVariable String path, @RequestBody Event event) throws IOException {
-        String sha = restClientService.getFileSha(path);
+        String sha = restClientService.getFileContent(path).getSha();
         String githubReqBody = jsonService.buildRequestBody(sha, event);
         restClientService.updateFileContent(path, githubReqBody);
 
