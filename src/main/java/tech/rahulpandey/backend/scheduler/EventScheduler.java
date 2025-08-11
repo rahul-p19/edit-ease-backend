@@ -30,19 +30,14 @@ public class EventScheduler {
     @Scheduled(cron = "0 40 1 * * *", zone = "Asia/Kolkata")
     public boolean updateAllEventsData() {
         try {
-            // get all events from db
             List<Event> allEvents = (List<Event>) eventService.getAllEvents();
 
-            // get file content from GitHub api
             FileContentDTO fileContent = restClientService.getFileContent("allEvents");
-            String sha = fileContent.getSha();
-            String githubFile = fileContent.getContent();
             String databaseFile  = jsonService.allEventsToString(allEvents);
 
-            // exit if there is no change
-            if(githubFile.equals(databaseFile)) return false;
+            if(databaseFile.equals(fileContent.getContent())) return false;
 
-            String requestBody = jsonService.formatAllEventsBody(databaseFile,sha);
+            String requestBody = jsonService.formatAllEventsBody(databaseFile,fileContent.getSha());
             restClientService.updateFileContent("allEvents", requestBody);
             return true;
         } catch (Exception e) {

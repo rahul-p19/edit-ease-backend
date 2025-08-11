@@ -34,8 +34,9 @@ public class JsonService {
         try{
             JsonNode jsonNode = objectMapper.readTree(res);
             String sha = jsonNode.get("sha").asText();
-            String content = jsonNode.get("content").asText();
-            return new FileContentDTO(sha,content);
+            String encodedContent = jsonNode.get("content").asText();
+            byte[] content = Base64.getDecoder().decode(encodedContent.getBytes());
+            return new FileContentDTO(sha,new String(content));
         }catch(JsonProcessingException e){
             System.err.println("Error while extracting sha: "+e.getMessage());
         }
